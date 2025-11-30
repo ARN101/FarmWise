@@ -11,6 +11,8 @@ module com.example.firmwise {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires com.google.gson;
+    requires java.net.http;
 
     opens com.example.firmwise to javafx.fxml;
     opens com.example.firmwise.controller to javafx.fxml;

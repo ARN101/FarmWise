@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
@@ -52,9 +53,51 @@
                   <Insets left="20.0" />
                </padding>
             </Button>
+            <Button mnemonicParsing="false" onAction="#showFarmProfile" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT;" text="Farm Profile">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </Button>
          </children>
       </VBox>
    </left>
+   <top>
+      <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="900.0" spacing="15.0" style="-fx-background-color: #ecf0f1;" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="cityLabel" text="City" textFill="BLACK">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="weatherLabel" text="Loading..." textFill="#7f8c8d">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="tempLabel" text="--°C" textFill="#2c3e50">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="humidityLabel" text="Hum: --%" textFill="#7f8c8d">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="rainLabel" text="Rain: --" textFill="#2980b9">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets right="20.0" />
+         </padding>
+      </HBox>
+   </top>
    <center>
       <StackPane fx:id="contentArea" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #F5F5DC;" BorderPane.alignment="CENTER" />
    </center>

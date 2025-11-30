@@ -61,6 +61,14 @@ public class DatabaseHandler {
                     ")";
             stmt.execute(createExpensesTable);
 
+            String createFarmProfileTable = "CREATE TABLE IF NOT EXISTS farm_profile (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "farm_name TEXT," +
+                    "city TEXT," +
+                    "country TEXT" +
+                    ")";
+            stmt.execute(createFarmProfileTable);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
