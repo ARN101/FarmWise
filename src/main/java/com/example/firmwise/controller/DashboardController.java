@@ -31,6 +31,11 @@ public class DashboardController {
     }
 
     @FXML
+    private void showExpenses() {
+        loadView("expenses.fxml");
+    }
+
+    @FXML
     private void showDashboard() {
         // Placeholder for dashboard home
         // loadView("home.fxml");

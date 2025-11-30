@@ -50,6 +50,17 @@ public class DatabaseHandler {
                     ")";
             stmt.execute(createVaccinationsTable);
 
+            String createExpensesTable = "CREATE TABLE IF NOT EXISTS expenses (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "category TEXT," +
+                    "amount REAL," +
+                    "date TEXT," +
+                    "animal_id INTEGER," +
+                    "notes TEXT," +
+                    "FOREIGN KEY(animal_id) REFERENCES animals(id)" +
+                    ")";
+            stmt.execute(createExpensesTable);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
