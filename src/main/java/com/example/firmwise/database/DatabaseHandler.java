@@ -37,6 +37,19 @@ public class DatabaseHandler {
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createAnimalsTable);
+
+            String createVaccinationsTable = "CREATE TABLE IF NOT EXISTS vaccinations (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "animal_id INTEGER," +
+                    "vaccine_name TEXT," +
+                    "date_given TEXT," +
+                    "next_due_date TEXT," +
+                    "status TEXT," +
+                    "notes TEXT," +
+                    "FOREIGN KEY(animal_id) REFERENCES animals(id)" +
+                    ")";
+            stmt.execute(createVaccinationsTable);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

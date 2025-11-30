@@ -36,6 +36,14 @@
                   <Insets left="20.0" />
                </padding>
             </Button>
+            <Button mnemonicParsing="false" onAction="#showVaccinations" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT;" text="Vaccinations">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </Button>
          </children>
       </VBox>
    </left>

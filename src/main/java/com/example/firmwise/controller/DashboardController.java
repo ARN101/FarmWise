@@ -26,6 +26,11 @@ public class DashboardController {
     }
 
     @FXML
+    private void showVaccinations() {
+        loadView("vaccinations.fxml");
+    }
+
+    @FXML
     private void showDashboard() {
         // Placeholder for dashboard home
         // loadView("home.fxml");
