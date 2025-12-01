@@ -9,50 +9,57 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.*;
-import java.time.LocalDate;
 
 public class ExpenseController {
 
     @FXML
-    private TableView<Expense> expenseTable;
-    @FXML
-    private TableColumn<Expense, Integer> colId;
-    @FXML
-    private TableColumn<Expense, String> colCategory;
-    @FXML
-    private TableColumn<Expense, Double> colAmount;
-    @FXML
-    private TableColumn<Expense, String> colDate;
-    @FXML
-    private TableColumn<Expense, Integer> colAnimalId;
-
-    @FXML
-    private ComboBox<String> categoryBox;
+    private TextField categoryField;
     @FXML
     private TextField amountField;
     @FXML
     private DatePicker datePicker;
     @FXML
-    private ComboBox<Integer> animalIdBox;
+    private ComboBox<Integer> animalIdComboBox;
     @FXML
     private TextArea notesArea;
     @FXML
-    private Label totalExpensesLabel;
+    private TableView<Expense> expenseTable;
+    @FXML
+    private TableColumn<Expense, String> categoryColumn;
+    @FXML
+    private TableColumn<Expense, Double> amountColumn;
+    @FXML
+    private TableColumn<Expense, String> dateColumn;
+    @FXML
+    private TableColumn<Expense, Integer> animalIdColumn;
+    @FXML
+    private TableColumn<Expense, String> notesColumn;
+    @FXML
+    private TableColumn<Expense, String> typeColumn;
+    @FXML
+    private Label totalIncomeLabel;
+    @FXML
+    private Label totalExpenseLabel;
+    @FXML
+    private Label netProfitLabel;
+    @FXML
+    private RadioButton expenseRadio;
+    @FXML
+    private RadioButton incomeRadio;
 
     private ObservableList<Expense> expenseList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-        colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colAnimalId.setCellValueFactory(new PropertyValueFactory<>("animalId"));
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        animalIdColumn.setCellValueFactory(new PropertyValueFactory<>("animalId"));
+        notesColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
 
-        categoryBox.setItems(FXCollections.observableArrayList("Feed", "Medicine", "Equipment", "Labor", "Other"));
-
-        loadAnimalIds();
         loadExpenses();
+        loadAnimalIds();
     }
 
     private void loadAnimalIds() {
@@ -64,33 +71,7 @@ public class ExpenseController {
             while (rs.next()) {
                 animalIds.add(rs.getInt("id"));
             }
-            animalIdBox.setItems(animalIds);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadExpenses() {
-        expenseList.clear();
-        double total = 0;
-        String query = "SELECT * FROM expenses";
-        try (Connection conn = DatabaseHandler.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query)) {
-
-            while (rs.next()) {
-                double amount = rs.getDouble("amount");
-                total += amount;
-                expenseList.add(new Expense(
-                        rs.getInt("id"),
-                        rs.getString("category"),
-                        amount,
-                        rs.getString("date"),
-                        rs.getInt("animal_id") == 0 ? null : rs.getInt("animal_id"),
-                        rs.getString("notes")));
-            }
-            expenseTable.setItems(expenseList);
-            totalExpensesLabel.setText(String.format("Total Expenses: BDT %.2f", total));
+            animalIdComboBox.setItems(animalIds);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -98,36 +79,95 @@ public class ExpenseController {
 
     @FXML
     private void addExpense() {
-        String query = "INSERT INTO expenses (category, amount, date, animal_id, notes) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseHandler.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try {
+            String category = categoryField.getText();
+            double amount = Double.parseDouble(amountField.getText());
+            String date = datePicker.getValue() != null ? datePicker.getValue().toString() : "";
+            Integer animalId = animalIdComboBox.getValue();
+            String notes = notesArea.getText();
+            String type = incomeRadio.isSelected() ? "Income" : "Expense";
 
-            pstmt.setString(1, categoryBox.getValue());
-            pstmt.setDouble(2, Double.parseDouble(amountField.getText()));
-            pstmt.setString(3, datePicker.getValue().toString());
-            if (animalIdBox.getValue() != null) {
-                pstmt.setInt(4, animalIdBox.getValue());
-            } else {
-                pstmt.setNull(4, Types.INTEGER);
+            String query = "INSERT INTO expenses (category, amount, date, animal_id, notes, type) VALUES (?, ?, ?, ?, ?, ?)";
+            try (Connection conn = DatabaseHandler.getConnection();
+                    PreparedStatement pstmt = conn.prepareStatement(query)) {
+                pstmt.setString(1, category);
+                pstmt.setDouble(2, amount);
+                pstmt.setString(3, date);
+                if (animalId != null) {
+                    pstmt.setInt(4, animalId);
+                } else {
+                    pstmt.setNull(4, java.sql.Types.INTEGER);
+                }
+                pstmt.setString(5, notes);
+                pstmt.setString(6, type);
+                pstmt.executeUpdate();
+
+                loadExpenses();
+                clearFields();
             }
-            pstmt.setString(5, notesArea.getText());
-
-            pstmt.executeUpdate();
-            loadExpenses();
-            clearFields();
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid amount format");
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (NumberFormatException e) {
-            // Handle invalid number format
-            System.err.println("Invalid amount format");
+        }
+    }
+
+    private void loadExpenses() {
+        expenseList.clear();
+        double totalIncome = 0;
+        double totalExpense = 0;
+
+        String query = "SELECT * FROM expenses";
+        try (Connection conn = DatabaseHandler.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                double amount = rs.getDouble("amount");
+                String type = rs.getString("type");
+
+                // Handle legacy data where type might be null
+                if (type == null)
+                    type = "Expense";
+
+                if ("Income".equals(type)) {
+                    totalIncome += amount;
+                } else {
+                    totalExpense += amount;
+                }
+
+                expenseList.add(new Expense(
+                        rs.getInt("id"),
+                        rs.getString("category"),
+                        amount,
+                        rs.getString("date"),
+                        rs.getInt("animal_id") == 0 ? null : rs.getInt("animal_id"),
+                        rs.getString("notes"),
+                        type));
+            }
+            expenseTable.setItems(expenseList);
+
+            totalIncomeLabel.setText(String.format("Total Income: %.2f", totalIncome));
+            totalExpenseLabel.setText(String.format("Total Expense: %.2f", totalExpense));
+
+            double profit = totalIncome - totalExpense;
+            netProfitLabel.setText(String.format("Net Profit: %.2f", profit));
+            if (profit >= 0) {
+                netProfitLabel.setStyle("-fx-text-fill: green;");
+            } else {
+                netProfitLabel.setStyle("-fx-text-fill: red;");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     private void clearFields() {
-        categoryBox.getSelectionModel().clearSelection();
+        categoryField.clear();
         amountField.clear();
         datePicker.setValue(null);
-        animalIdBox.getSelectionModel().clearSelection();
+        animalIdComboBox.getSelectionModel().clearSelection();
         notesArea.clear();
     }
 }

@@ -57,9 +57,18 @@ public class DatabaseHandler {
                     "date TEXT," +
                     "animal_id INTEGER," +
                     "notes TEXT," +
+                    "type TEXT," +
                     "FOREIGN KEY(animal_id) REFERENCES animals(id)" +
                     ")";
             stmt.execute(createExpensesTable);
+
+            // Migration: Add 'type' column if it doesn't exist (for existing databases)
+            try {
+                stmt.execute("ALTER TABLE expenses ADD COLUMN type TEXT");
+                stmt.execute("UPDATE expenses SET type = 'Expense' WHERE type IS NULL");
+            } catch (SQLException e) {
+                // Column likely exists or other error, safe to ignore for this update
+            }
 
             String createFarmProfileTable = "CREATE TABLE IF NOT EXISTS farm_profile (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +

@@ -54,6 +54,11 @@ public class DashboardController {
     }
 
     @FXML
+    private void showReports() {
+        loadView("reports.fxml");
+    }
+
+    @FXML
     private void showDashboard() {
         loadView("home.fxml");
     }

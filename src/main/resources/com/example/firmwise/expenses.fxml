@@ -5,10 +5,12 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -18,46 +20,77 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
    <children>
-      <HBox alignment="CENTER_LEFT" spacing="20.0">
+      <Label text="Finance Tracker">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <HBox spacing="20.0">
          <children>
-            <Label text="Expense Tracker">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-            </Label>
-            <Label fx:id="totalExpensesLabel" text="Total Expenses: BDT 0.00" textFill="#e74c3c">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
-            </Label>
-         </children>
-      </HBox>
-      <HBox spacing="10.0">
-         <children>
-            <VBox spacing="5.0">
+            <VBox spacing="10.0">
                <children>
-                  <ComboBox fx:id="categoryBox" prefWidth="150.0" promptText="Category" />
-                  <TextField fx:id="amountField" promptText="Amount" />
+                  <Label text="Type" />
+                  <HBox spacing="10.0">
+                     <children>
+                        <RadioButton fx:id="expenseRadio" mnemonicParsing="false" selected="true" text="Expense">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="typeGroup" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="incomeRadio" mnemonicParsing="false" text="Income" toggleGroup="$typeGroup" />
+                     </children>
+                  </HBox>
+                  <Label text="Category" />
+                  <TextField fx:id="categoryField" promptText="e.g. Feed, Medicine, Sales" />
+                  <Label text="Amount" />
+                  <TextField fx:id="amountField" promptText="0.00" />
+                  <Label text="Date" />
+                  <DatePicker fx:id="datePicker" />
+                  <Label text="Animal ID (Optional)" />
+                  <ComboBox fx:id="animalIdComboBox" prefWidth="150.0" />
+                  <Label text="Notes" />
+                  <TextArea fx:id="notesArea" prefHeight="60.0" prefWidth="200.0" />
+                  <Button mnemonicParsing="false" onAction="#addExpense" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #3498db;" text="Add Record" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
                </children>
             </VBox>
-            <VBox spacing="5.0">
+            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                  <DatePicker fx:id="datePicker" promptText="Date" />
-                  <ComboBox fx:id="animalIdBox" prefWidth="150.0" promptText="Linked Animal (Opt)" />
+                  <HBox alignment="CENTER_LEFT" spacing="20.0">
+                     <children>
+                        <Label fx:id="totalIncomeLabel" text="Total Income: 0.00" textFill="#27ae60">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="totalExpenseLabel" text="Total Expense: 0.00" textFill="#e74c3c">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="netProfitLabel" text="Net Profit: 0.00">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <TableView fx:id="expenseTable" prefHeight="400.0" prefWidth="400.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                      <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
+                      <TableColumn fx:id="categoryColumn" prefWidth="100.0" text="Category" />
+                      <TableColumn fx:id="amountColumn" prefWidth="75.0" text="Amount" />
+                      <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Date" />
+                      <TableColumn fx:id="animalIdColumn" prefWidth="75.0" text="Animal ID" />
+                      <TableColumn fx:id="notesColumn" prefWidth="150.0" text="Notes" />
+                    </columns>
+                  </TableView>
                </children>
             </VBox>
-            <TextArea fx:id="notesArea" prefHeight="60.0" prefWidth="200.0" promptText="Notes" />
-            <Button mnemonicParsing="false" onAction="#addExpense" prefHeight="60.0" style="-fx-background-color: #2ECC71;" text="Add Expense" textFill="WHITE" />
          </children>
       </HBox>
-      <TableView fx:id="expenseTable" prefHeight="400.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-        <columns>
-          <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
-          <TableColumn fx:id="colCategory" prefWidth="100.0" text="Category" />
-            <TableColumn fx:id="colAmount" prefWidth="100.0" text="Amount" />
-            <TableColumn fx:id="colDate" prefWidth="100.0" text="Date" />
-            <TableColumn fx:id="colAnimalId" prefWidth="75.0" text="Animal ID" />
-        </columns>
-      </TableView>
    </children>
 </VBox>
