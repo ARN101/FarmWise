@@ -26,11 +26,29 @@ public class DashboardController {
     private Label rainLabel;
     @FXML
     private Label humidityLabel;
+    @FXML
+    private Label notificationBadge;
 
     @FXML
     public void initialize() {
         loadWeather();
+        updateNotificationBadge();
         loadView("home.fxml");
+    }
+
+    private void updateNotificationBadge() {
+        new Thread(() -> {
+            com.example.firmwise.service.NotificationService service = new com.example.firmwise.service.NotificationService();
+            int count = service.getNotifications().size();
+            javafx.application.Platform.runLater(() -> {
+                if (count > 0) {
+                    notificationBadge.setText(String.valueOf(count));
+                    notificationBadge.setVisible(true);
+                } else {
+                    notificationBadge.setVisible(false);
+                }
+            });
+        }).start();
     }
 
     @FXML
@@ -56,6 +74,12 @@ public class DashboardController {
     @FXML
     private void showReports() {
         loadView("reports.fxml");
+    }
+
+    @FXML
+    private void showNotifications() {
+        loadView("notifications.fxml");
+        // Optional: Hide badge when viewed? For now, keep it to show active status.
     }
 
     @FXML
